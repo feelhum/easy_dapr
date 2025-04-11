@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>00490a10-c45b-4d4c-b6ae-887279d7adbb</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+		<PackageReference Include="Dapr.Actors" Version="1.15.3" />
+		<PackageReference Include="Dapr.AspNetCore" Version="1.15.3" />
+		<PackageReference Include="Dapr.Extensions.Configuration" Version="1.15.3" />
+	</ItemGroup>
+
+</Project>

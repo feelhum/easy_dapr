@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyDapr.Core\EasyDapr.Core.csproj" />
+    <ProjectReference Include="..\UserService.Entitys\UserService.Entities.csproj" />
+    <ProjectReference Include="..\UserService.IAppService\UserService.IAppService.csproj" />
+  </ItemGroup>
+
+</Project>

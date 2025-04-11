@@ -1,0 +1,4 @@
+﻿dapr:
+  configuration:
+    name: configstore
+    key: appsettings.Development
