@@ -8,6 +8,7 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Grpc.AspNetCore" Version="2.70.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
 		<PackageReference Include="Dapr.Actors" Version="1.15.3" />
 		<PackageReference Include="Dapr.AspNetCore" Version="1.15.3" />

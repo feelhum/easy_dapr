@@ -26,15 +26,15 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<UnifiedResponseFilter>(); // 注册全局过滤器
 });
 
-// 注册 DaprClient 到依赖注入容器
-builder.Services.AddDaprClient();
+
 
 // 启用 ApiBehaviorOptions
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = false; // 自动返回模型验证错误
 });
-
+// 注册 DaprClient 到依赖注入容器
+builder.Services.AddDaprClient();
 var app = builder.Build();
 // 注册全局异常处理中间件
 app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -48,6 +48,8 @@ app.Use(async (context, next) =>
     }
     await next();
 });
+
+
 app.UseRouting(); // 必须有 UseRouting()，它负责匹配路由
 app.Use(async (context, next) =>
 {
@@ -57,5 +59,6 @@ app.Use(async (context, next) =>
 });
 // 使用控制器映射路由
 app.MapControllers();
+
 
 app.Run();

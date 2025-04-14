@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EasyDapr.Core\EasyDapr.Core.csproj" />
+    <ProjectReference Include="..\ProductService.Dtos\ProductService.Dtos.csproj" />
     <ProjectReference Include="..\UserService.Entitys\UserService.Entities.csproj" />
     <ProjectReference Include="..\UserService.IAppService\UserService.IAppService.csproj" />
   </ItemGroup>

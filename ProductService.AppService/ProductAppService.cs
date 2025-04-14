@@ -2,18 +2,23 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Dtos;
 using ProductService.IAppService;
-
+using ProtoBuf.Grpc;
+using System.ServiceModel;
 namespace ProductService.AppService
 {
-    [ApiController]
-    [Route("api/product")]
+    
     public class ProductAppService : EasyDaprService, IProductAppService
     {
-        [HttpPost("GetProduct")]
-        public async Task<string> GetProductAsync([FromBody] GetProductInput input)
+        public async Task<GetProductOutput> GetProductAsync([FromBody] GetProductInput input)
         {
-            Console.WriteLine($"Received input: {input?.id}");
-            return await Task.FromResult($"产品id是：{input.id}");
+            if (input == null)
+            {
+                Console.WriteLine("Request body is null.");
+                throw new ArgumentNullException(nameof(input), "Input cannot be null.");
+            }
+
+            Console.WriteLine($"Received input: {input.id}");
+            return await Task.FromResult(new GetProductOutput() { result= $"产品id是：{input.id}" });
         }
     }
 }

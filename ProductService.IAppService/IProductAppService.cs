@@ -1,10 +1,13 @@
-﻿using ProductService.Dtos;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProductService.Dtos;
+using System.ServiceModel;
 
 namespace ProductService.IAppService
 {
+    [ServiceContract]
     public interface IProductAppService
     {
-
-        Task<string> GetProductAsync(GetProductInput input);
+        [OperationContract]
+        Task<GetProductOutput> GetProductAsync([FromBody] GetProductInput input);
     }
 }

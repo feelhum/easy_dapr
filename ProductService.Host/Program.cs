@@ -2,6 +2,7 @@ using EasyDapr.Core.Exceptions;
 using EasyDapr.Core.Midderwares;
 using FreeSql;
 using Microsoft.AspNetCore.Mvc;
+using ProductService.AppService;
 var builder = WebApplication.CreateBuilder(args);
 
 // 注册 IFreeSql
@@ -26,15 +27,15 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<UnifiedResponseFilter>(); // 注册全局过滤器
 });
 
-// 注册 DaprClient 到依赖注入容器
-builder.Services.AddDaprClient();
+
 
 // 启用 ApiBehaviorOptions
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = false; // 自动返回模型验证错误
 });
-
+// 注册 DaprClient 到依赖注入容器
+builder.Services.AddDaprClient();
 var app = builder.Build();
 // 注册全局异常处理中间件
 app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -57,5 +58,4 @@ app.Use(async (context, next) =>
 });
 // 使用控制器映射路由
 app.MapControllers();
-
 app.Run();

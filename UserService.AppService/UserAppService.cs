@@ -4,6 +4,8 @@ using EasyDapr.Core.Exceptions;
 using EasyDapr.Core.Midderwares;
 using Microsoft.AspNetCore.Mvc;
 using MySqlX.XDevAPI.Common;
+using ProductService.Dtos;
+using System.Text.Json;
 using UserService.Dtos;
 using UserService.Entities;
 using UserService.IAppService;
@@ -40,26 +42,27 @@ namespace UserService.AppService
         {
             try
             {
-                // 创建 Dapr 客户端
-                using var client = new DaprClientBuilder().Build();
+                /// 创建 Dapr 客户端
+                using var daprClient = new DaprClientBuilder().Build();
 
                 // 目标服务的 AppId
                 string targetAppId = "productapp";
 
                 // 调用目标服务的方法
-                string methodName = "api/product/GetProduct"; // 目标服务中暴露的方法名
+                string methodName = "api/Product/GetProduct"; // 格式：接口名/方法名
 
-                // 请求数据（如果需要发送请求体）
-                var requestData = new { Id = 1 };
+                // 请求数据
+                var requestData = new GetProductInput { id = 1 };
 
-                // 通过 Dapr 调用目标服务的 HTTP 方法
-                var result = await client.InvokeMethodAsync<object, string>(
+                // 调用目标服务的 gRPC 方法
+                var result = await daprClient.InvokeMethodAsync<GetProductInput, GetProductOutput>(
+                    httpMethod: HttpMethod.Post,  // HTTP 方法
                     targetAppId,          // 目标服务的 AppId
                     methodName,           // 目标服务的方法名
                     requestData           // 请求数据
                 );
 
-                return result;
+                return result.ToString();
             }
             catch (Exception ex)
             {
