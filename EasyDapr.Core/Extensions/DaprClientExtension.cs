@@ -29,8 +29,9 @@ namespace EasyDapr.Core.Extensions
                 // 打印错误信息
                 Console.WriteLine($"Error from target service: {errorResponse}");
 
-                // 抛出自定义异常
-                throw new UserFriendlyException($"当前错误:{daprEx.Message} ; 内部错误:{dto?.ErrorMessage}");
+                var msgSplied = dto?.ErrorMessage.GetMessageSplied();
+                // 抛出自定义异常 【{msgSplied?.MessageDetail}=>{daprEx.Message}】
+                throw new UserFriendlyException($"{msgSplied?.Message}");
             }
             catch (Exception ex)
             {
@@ -38,5 +39,18 @@ namespace EasyDapr.Core.Extensions
             }
 
         }
+        
+        public static MessageSplied GetMessageSplied(this string message)
+        {
+            var msgSplit = message.Split("【");
+            return new MessageSplied() { Message = msgSplit[0], MessageDetail = (msgSplit.Length > 1 ? msgSplit[1] : "").Replace("】", "").Replace("=>", "") };
+        }
+
+    }
+
+    public class MessageSplied
+    {
+        public string Message { get; set; }
+        public string  MessageDetail { get; set; }
     }
 }

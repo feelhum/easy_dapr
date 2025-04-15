@@ -13,6 +13,7 @@
 		<PackageReference Include="Dapr.Actors" Version="1.15.3" />
 		<PackageReference Include="Dapr.AspNetCore" Version="1.15.3" />
 		<PackageReference Include="Dapr.Extensions.Configuration" Version="1.15.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\ProductService.AppService\ProductService.AppService.csproj" />

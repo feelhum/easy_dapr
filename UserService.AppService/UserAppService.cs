@@ -40,32 +40,32 @@ namespace UserService.AppService
 
         public async Task<GetProductOutput> GetUser(IdInput input)
         {
-                /// 创建 Dapr 客户端
-                using var daprClient = new DaprClientBuilder().Build();
+            // 创建 Dapr 客户端
+            using var daprClient = new DaprClientBuilder().Build();
 
-                // 目标服务的 AppId
-                string targetAppId = "productapp";
+            // 目标服务的 AppId
+            string targetAppId = "Product";
 
-                // 调用目标服务的方法
-                string methodName = "api/Product/GetProduct"; // 格式：接口名/方法名
+            // 调用目标服务的方法
+            string methodName = "api/Product/GetProduct"; // 格式：接口名/方法名
 
-                // 请求数据
-                var requestData = new IdInput {  Id = 1};
+            // 请求数据
+            var requestData = new GetProductInput { id = 1 };
 
-                // 调用目标服务的 gRPC 方法
-                var result = await daprClient.EasyInvokeMethodAsync<IdInput, GetProductOutput>(
-                    httpMethod: HttpMethod.Get,  // HTTP 方法
-                    targetAppId,          // 目标服务的 AppId
-                    methodName,           // 目标服务的方法名
-                    requestData           // 请求数据
-                );
-                Console.WriteLine($"Result: {System.Text.Json.JsonSerializer.Serialize(result)}");
-                return result;
-           
+            // 调用目标服务的 gRPC 方法
+            var result = await daprClient.EasyInvokeMethodAsync<GetProductInput, GetProductOutput>(
+                httpMethod: HttpMethod.Post,  // HTTP 方法
+                targetAppId,          // 目标服务的 AppId 
+                methodName,           // 目标服务的方法名
+                requestData           // 请求数据
+            );
+            Console.WriteLine($"Result: {System.Text.Json.JsonSerializer.Serialize(result)}");
+            return result;
 
-            // 从 Dapr 的状态存储中获取用户信息
-            //var user = await _daprClient.GetStateAsync<string>("statestore", $"user-{id}");
-            //return user ?? $"User {id} not found";
+
+            //从 Dapr 的状态存储中获取用户信息
+            var user = await _daprClient.GetStateAsync<string>("statestore", $"user-{input.Id}");
+            return new GetProductOutput() { result = "产品资料" };
         }
 
         public async Task<bool> AddUser(UserInputDto input)

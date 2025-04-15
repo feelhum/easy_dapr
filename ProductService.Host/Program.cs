@@ -2,8 +2,46 @@ using EasyDapr.Core.Exceptions;
 using EasyDapr.Core.Midderwares;
 using FreeSql;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using ProductService.AppService;
 var builder = WebApplication.CreateBuilder(args);
+
+// 添加 Swagger 服务
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "My API",
+        Description = "An example API for Dapr integration with FreeSql and custom conventions"
+    });
+
+    // 添加对使用 `Bearer` Token 的支持（如果需要授权，可以添加如下配置）
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer' followed by a space and your JWT token."
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 // 注册 IFreeSql
 builder.Services.AddSingleton<IFreeSql>(provider =>
@@ -37,6 +75,18 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 // 注册 DaprClient 到依赖注入容器
 builder.Services.AddDaprClient();
 var app = builder.Build();
+
+// 启用 Swagger 中间件
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        options.RoutePrefix = string.Empty; // 设置 Swagger UI 的根路径（默认是 `/`）
+    });
+}
+
 // 注册全局异常处理中间件
 app.UseMiddleware<GlobalExceptionMiddleware>();
 // 打印所有注册的路由信息

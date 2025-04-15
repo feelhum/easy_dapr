@@ -12,9 +12,10 @@ namespace EasyDapr.Core.ResponseResult
         public int Status { get; set; } // HTTP 状态码
         public string Code { get; set; } // 状态信息（如 Success 或 Failure）
         public string ErrorMessage { get; set; } = ""; // 错误信息
+
         public object? ValidErrors { get; set; } = null; // 验证错误信息
 
-        public StandardApiResponse(T? data, int status, string code, string errorMessage = "", object? validErrors = null)
+        public StandardApiResponse(T? data, int status, string code, string errorMessage = "",  object? validErrors = null)
         {
             Data = data;
             Status = status;
@@ -30,7 +31,7 @@ namespace EasyDapr.Core.ResponseResult
 
         public static StandardApiResponse<T> Failure(string errorMessage, int status = 500, object? validErrors = null)
         {
-            return new StandardApiResponse<T>(default, status, "Failure", errorMessage, validErrors);
+            return new StandardApiResponse<T>(default, status, "Failure", errorMessage,validErrors);
         }
     }
 }

@@ -1,18 +1,19 @@
 ﻿using EasyDapr.Core.Attributes;
-using EasyDapr.Core.Exceptions;
+using EasyDapr.Core.Dtos;
 using EasyDapr.Core.Midderwares;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Dtos;
 using ProductService.IAppService;
-using ProtoBuf.Grpc;
-using System.ServiceModel;
-using static Google.Rpc.Context.AttributeContext.Types;
+using Invokes;
+using Dapr.Client;
+using EasyDapr.Core.Exceptions;
 namespace ProductService.AppService
 {
-    
+
     public class ProductAppService : EasyDaprService, IProductAppService
     {
-        [InternalAccessOnlyAttribute]
+        [InternalAccessOnly]
+        [HttpPost]
         public async Task<GetProductOutput> GetProductAsync([FromBody] GetProductInput input)
         {
             if (input == null)
@@ -21,9 +22,9 @@ namespace ProductService.AppService
                 throw new ArgumentNullException(nameof(input), "Input cannot be null.");
             }
 
-            throw new Exception("error");
+            //throw new Exception("系统错误，请联系管理员");
 
-            //throw new UserFriendlyException("错误");
+            throw new UserFriendlyException("系统错误，请联系管理员");
 
 
             var response = await Task.FromResult(new GetProductOutput() { result= $"id is {input.id}" });
@@ -32,6 +33,12 @@ namespace ProductService.AppService
             Console.WriteLine($"Serialized response: {jsonResponse}");
 
             return response;
+        }
+
+        public async Task<string> GetUserAsync(int id)
+        {
+            using var daprClient = new DaprClientBuilder().Build();
+            return (await daprClient.GetUserAsync(new IdInput { Id = id })).result;
         }
     }
 }
