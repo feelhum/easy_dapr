@@ -22,7 +22,7 @@ namespace EasyDapr.Core.Midderwares
             if (hasAttribute)
             {
                 // 验证请求头中的 X-Dapr-Identity
-                var daprIdentity = context.HttpContext.Request.Headers["X-Dapr-Identity"].FirstOrDefault();
+                var daprIdentity = context.HttpContext.Request.Headers["traceparent"].FirstOrDefault();
 
                 if (string.IsNullOrEmpty(daprIdentity))
                 {
@@ -43,7 +43,17 @@ namespace EasyDapr.Core.Midderwares
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
-        {
+        { 
+
+            // 判断是否是来自 Dapr 的内部调用
+            var isInternalDaprCall = context.HttpContext.Request.Headers["traceparent"].FirstOrDefault() != null;
+
+            if (isInternalDaprCall)
+            {
+                // 如果是内部调用，不进行包装，直接返回原始结果
+                return;
+            }
+
             if (context.Exception != null)
             {
                 if (context.Exception is UserFriendlyException userFriendlyException)
@@ -69,7 +79,7 @@ namespace EasyDapr.Core.Midderwares
                         data = null as object,
                         status = 500,
                         code = "Failure",
-                        errorMessage = "An unexpected error occurred. Please try again later.",
+                        errorMessage = "An unexpected error occurred. Please try again later （1）.",
                         validErrors = null as object
                     })
                     {
@@ -114,30 +124,5 @@ namespace EasyDapr.Core.Midderwares
             }
         }
 
-        private bool IsRequestFromDaprSidecar(IPAddress remoteIpAddress)
-        {
-            // 检查请求是否来自本地主机
-            return remoteIpAddress != null && (IPAddress.IsLoopback(remoteIpAddress) || remoteIpAddress.Equals(IPAddress.IPv6Loopback));
-        }
-
-        private bool IsInternalRequest(ActionExecutingContext context)
-        {
-            // 检查 Dapr-App-Id 是否存在（用于识别服务间调用）
-            var daprAppId = context.HttpContext.Request.Headers["Dapr-App-Id"].FirstOrDefault();
-            if (!string.IsNullOrEmpty(daprAppId))
-            {
-                return true; // 是服务间调用
-            }
-
-            // 检查是否是 RPC 请求（通过 gRPC 标识）
-            var isGrpcRequest = context.HttpContext.Request.Headers.ContainsKey("grpc-trace-bin");
-            if (isGrpcRequest)
-            {
-                return true; // 是 RPC 服务间调用
-            }
-
-            // 如果没有以上标识，则认为是外部客户端调用
-            return false;
-        }
     }
 }

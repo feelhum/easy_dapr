@@ -1,4 +1,5 @@
-﻿using EasyDapr.Core.Midderwares;
+﻿using EasyDapr.Core.Dtos;
+using ProductService.Dtos;
 using UserService.Dtos;
 
 namespace UserService.IAppService
@@ -6,10 +7,12 @@ namespace UserService.IAppService
     public interface IUserAppService
     {
 
-       Task<UserOutputDto> GetUserInfoAsync(int userId);
+       Task<UserOutputDto> GetUserInfoAsync(IdInput input);
 
-        Task<string> GetUser(int id);
+        Task<GetProductOutput> GetUser(IdInput input);
 
-        Task<bool> AddUser(int id, string name);
+        Task<bool> AddUser(UserInputDto input);
+
+        Task<bool> TestUserAsync(string f1, bool f2, long f3, int f4);
     }
 }

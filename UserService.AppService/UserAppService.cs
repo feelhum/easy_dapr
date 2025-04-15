@@ -1,11 +1,11 @@
 ﻿using Dapr.Client;
 using EasyDapr.Core.Attributes;
+using EasyDapr.Core.Dtos;
 using EasyDapr.Core.Exceptions;
+using EasyDapr.Core.Extensions;
 using EasyDapr.Core.Midderwares;
 using Microsoft.AspNetCore.Mvc;
-using MySqlX.XDevAPI.Common;
 using ProductService.Dtos;
-using System.Text.Json;
 using UserService.Dtos;
 using UserService.Entities;
 using UserService.IAppService;
@@ -24,9 +24,9 @@ namespace UserService.AppService
         }
         [HttpPost]
         [InternalAccessOnly]
-        public async Task<UserOutputDto> GetUserInfoAsync(int userId)
+        public async Task<UserOutputDto> GetUserInfoAsync(IdInput input)
         {
-            var result = await _freeSql.Select<User>().Where(u => u.Id == userId).FirstAsync<UserOutputDto>();
+            var result = await _freeSql.Select<User>().Where(u => u.Id == input.Id).FirstAsync<UserOutputDto>();
             if (result == null)
                 throw new UserFriendlyException("不存在的用户");
             try { 
@@ -38,10 +38,8 @@ namespace UserService.AppService
             
         }
 
-        public async Task<string> GetUser(int id)
+        public async Task<GetProductOutput> GetUser(IdInput input)
         {
-            try
-            {
                 /// 创建 Dapr 客户端
                 using var daprClient = new DaprClientBuilder().Build();
 
@@ -52,33 +50,36 @@ namespace UserService.AppService
                 string methodName = "api/Product/GetProduct"; // 格式：接口名/方法名
 
                 // 请求数据
-                var requestData = new GetProductInput { id = 1 };
+                var requestData = new IdInput {  Id = 1};
 
                 // 调用目标服务的 gRPC 方法
-                var result = await daprClient.InvokeMethodAsync<GetProductInput, GetProductOutput>(
-                    httpMethod: HttpMethod.Post,  // HTTP 方法
+                var result = await daprClient.EasyInvokeMethodAsync<IdInput, GetProductOutput>(
+                    httpMethod: HttpMethod.Get,  // HTTP 方法
                     targetAppId,          // 目标服务的 AppId
                     methodName,           // 目标服务的方法名
                     requestData           // 请求数据
                 );
-
-                return result.ToString();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
-            }
+                Console.WriteLine($"Result: {System.Text.Json.JsonSerializer.Serialize(result)}");
+                return result;
+           
 
             // 从 Dapr 的状态存储中获取用户信息
-            var user = await _daprClient.GetStateAsync<string>("statestore", $"user-{id}");
-            return user ?? $"User {id} not found";
+            //var user = await _daprClient.GetStateAsync<string>("statestore", $"user-{id}");
+            //return user ?? $"User {id} not found";
         }
 
-        public async Task<bool> AddUser(int id, string name)
+        public async Task<bool> AddUser(UserInputDto input)
         {
             // 将用户信息保存到 Dapr 的状态存储
-            await _daprClient.SaveStateAsync("statestore", $"user-{id}", name);
+            await _daprClient.SaveStateAsync("statestore", $"user-{input.Name}", input.Name);
+            return true;
+        }
+
+
+        public async Task<bool> TestUserAsync(string f1,bool f2,long f3,int f4)
+        {
+            // 将用户信息保存到 Dapr 的状态存储
+            await _daprClient.SaveStateAsync("statestore", $"user-{111}", "awd");
             return true;
         }
     }

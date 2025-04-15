@@ -31,6 +31,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Host", "Prod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.IAppService", "ProductService.IAppService\ProductService.IAppService.csproj", "{21988A07-4DD2-436B-A923-F77C6006407C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{CB2D8EA9-94C4-4FCD-9775-115D82E3AAD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyDapr.DaprInvokeGenerator", "EasyDapr.DaprInvokeGenerator\EasyDapr.DaprInvokeGenerator.csproj", "{BAAA5D16-BAA1-4691-AF0E-49CC2284CCC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +85,10 @@ Global
 		{21988A07-4DD2-436B-A923-F77C6006407C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21988A07-4DD2-436B-A923-F77C6006407C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21988A07-4DD2-436B-A923-F77C6006407C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAAA5D16-BAA1-4691-AF0E-49CC2284CCC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAAA5D16-BAA1-4691-AF0E-49CC2284CCC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAAA5D16-BAA1-4691-AF0E-49CC2284CCC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAAA5D16-BAA1-4691-AF0E-49CC2284CCC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +106,7 @@ Global
 		{06F6CBC2-44AD-444C-A039-68C9C0F46C10} = {78EF60DA-22CE-44DE-9161-B031C5BD7794}
 		{39C8F54D-E37D-49E3-A5BE-A19347377833} = {78EF60DA-22CE-44DE-9161-B031C5BD7794}
 		{21988A07-4DD2-436B-A923-F77C6006407C} = {78EF60DA-22CE-44DE-9161-B031C5BD7794}
+		{BAAA5D16-BAA1-4691-AF0E-49CC2284CCC7} = {CB2D8EA9-94C4-4FCD-9775-115D82E3AAD9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F8954954-2423-4CAD-957B-FECC79799B74}

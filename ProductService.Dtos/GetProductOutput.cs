@@ -1,6 +1,4 @@
-﻿using ProtoBuf;
-
-namespace ProductService.Dtos
+﻿namespace ProductService.Dtos
 {
     public class GetProductOutput
     {

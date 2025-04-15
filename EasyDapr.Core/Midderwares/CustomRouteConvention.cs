@@ -39,14 +39,14 @@ namespace EasyDapr.Core.Midderwares
 
                         // 动态设置路由规则
                         var routeAttribute = new Microsoft.AspNetCore.Mvc.RouteAttribute($"{actionName}");
-                        selector.AttributeRouteModel = new AttributeRouteModel(routeAttribute);
+                        selector!.AttributeRouteModel = new AttributeRouteModel(routeAttribute);
                         Console.WriteLine($"注册路由: {actionName}");
                     }
 
                     if(actionConstraints?.Count == 0)
                     {
                         var httpMethod = GetHttpMethod(action.ActionMethod.Name);
-                        selector.ActionConstraints.Add(new HttpMethodActionConstraint(new[] { httpMethod }));
+                        selector!.ActionConstraints.Add(new HttpMethodActionConstraint(new[] { httpMethod }));
                         Console.WriteLine($"注册请求方法: {httpMethod}");
                     }
 
@@ -86,6 +86,10 @@ namespace EasyDapr.Core.Midderwares
                 return "PUT";
             }
             else if (actionName.StartsWith("Delete", StringComparison.OrdinalIgnoreCase))
+            {
+                return "DELETE";
+            }
+            else if (actionName.StartsWith("Remove", StringComparison.OrdinalIgnoreCase))
             {
                 return "DELETE";
             }

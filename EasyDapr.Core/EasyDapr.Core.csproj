@@ -15,6 +15,7 @@
 		<PackageReference Include="FreeSql.Provider.MySql" Version="3.5.202" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
 		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="9.0.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="RabbitMQ.Client" Version="*" />
 		<PackageReference Include="Dapr.Actors" Version="1.15.3" />
 		<PackageReference Include="Dapr.AspNetCore" Version="1.15.3" />
@@ -23,8 +24,8 @@
 
 	<ItemGroup>
 	  <Folder Include="Abstractions\" />
-	  <Folder Include="Extensions\" />
 	  <Folder Include="Filters\" />
+	  <Folder Include="Grpc\" />
 	</ItemGroup>
 
 </Project>

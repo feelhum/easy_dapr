@@ -1,4 +1,5 @@
 ﻿using FreeSql.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace UserService.Entities
@@ -15,16 +16,16 @@ namespace UserService.Entities
         /// <summary>
         /// 姓名
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// 邮箱
         /// </summary>
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// 密码
         /// </summary>
-        public string Password { get; set; }
+        public string? Password { get; set; }
     }
 }

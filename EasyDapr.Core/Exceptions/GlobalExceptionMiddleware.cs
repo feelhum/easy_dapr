@@ -36,11 +36,11 @@ namespace EasyDapr.Core.Exceptions
 
             var response = new
             {
-                data = (object)null,
+                data = null as object,
                 status = ex.StatusCode,
                 code = "Failure",
                 errorMessage = ex.Message,
-                validErrors = (object)null
+                validErrors = null as object
             };
 
             return context.Response.WriteAsync(JsonSerializer.Serialize(response));
@@ -53,11 +53,11 @@ namespace EasyDapr.Core.Exceptions
 
             var response = new
             {
-                data = (object)null,
+                data = null as object,
                 status = context.Response.StatusCode,
                 code = "Failure",
-                errorMessage = "An unexpected error occurred. Please try again later.1",
-                validErrors = (object)null
+                errorMessage = "An unexpected error occurred. Please try again later（2）.",
+                validErrors = null as object
             };
 
             return context.Response.WriteAsync(JsonSerializer.Serialize(response));
