@@ -16,7 +16,7 @@ namespace EasyDapr.Core.Midderwares
         public void OnActionExecuting(ActionExecutingContext context)
         {
             var hasAttribute = context.ActionDescriptor.EndpointMetadata
-                .OfType<InternalAccessOnlyAttribute>()-
+                .OfType<InternalAccessOnlyAttribute>()
                 .Any();
 
             if (hasAttribute)
