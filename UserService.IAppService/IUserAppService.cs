@@ -9,9 +9,11 @@ namespace UserService.IAppService
 
        Task<UserOutputDto> GetUserInfoAsync(IdInput input);
 
+        Task<UserOutputDto> GetUserInfoTestAsync(int id);
+
         Task<GetProductOutput> GetUser(IdInput input);
 
-        Task<bool> AddUser(UserInputDto input);
+        Task<UserOutputDto> AddUser(UserInputDto input);
 
         Task<bool> TestUserAsync(string f1, bool f2, long f3, int f4);
     }

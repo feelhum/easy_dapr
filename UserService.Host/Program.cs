@@ -2,6 +2,7 @@
 using EasyDapr.Core.Midderwares;
 using FreeSql;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,11 +52,14 @@ builder.Services.AddSingleton<IFreeSql>(provider =>
         
         .Build());
 
+
+
 // 启用 ApiBehaviorOptions，模拟 [ApiController] 的功能
-//builder.Services.Configure<ApiBehaviorOptions>(options =>
-//{
-//    options.SuppressModelStateInvalidFilter = false; // 自动返回模型验证错误
-//});
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = false; // 自动返回模型验证错误
+    options.SuppressInferBindingSourcesForParameters = false; // 禁用默认推断
+});
 // 添加 MVC 服务并注册自定义控制器发现规则
 builder.Services.AddControllers(options =>
 {
@@ -65,7 +69,7 @@ builder.Services.AddControllers(options =>
     options.Conventions.Add(new CustomRouteConvention());
     options.Filters.Add<UnifiedResponseFilter>(); // 注册全局过滤器
 });
-
+//builder.Services.AddSingleton<IApplicationModelProvider, DynamicBindingApplicationModelProvider>();
 
 
 // 启用 ApiBehaviorOptions

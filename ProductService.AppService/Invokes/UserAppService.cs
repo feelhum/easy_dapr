@@ -17,6 +17,14 @@ namespace Invokes
             return await daprClient.EasyInvokeMethodAsync<IdInput, UserOutputDto>(HttpMethod.Post, targetAppId, methodName,  input);
         }
 
+        public static async Task<UserOutputDto> GetUserInfoTestAsyncAsync(this DaprClient daprClient, int id)
+        {
+            string targetAppId = "User";
+            string methodName = "api/User/getuserinfotest";
+
+            return await daprClient.EasyInvokeMethodAsync<int, UserOutputDto>(HttpMethod.Get, targetAppId, methodName, id);
+        }
+
         public static async Task<GetProductOutput> GetUserAsync(this DaprClient daprClient, IdInput input)
         {
             string targetAppId = "User";
@@ -25,12 +33,12 @@ namespace Invokes
             return await daprClient.EasyInvokeMethodAsync<IdInput, GetProductOutput>(HttpMethod.Get, targetAppId, methodName,  input);
         }
 
-        public static async Task<bool> AddUserAsync(this DaprClient daprClient, UserInputDto input)
+        public static async Task<UserOutputDto> AddUserAsync(this DaprClient daprClient, UserInputDto input)
         {
             string targetAppId = "User";
             string methodName = "api/User/adduser";
 
-            return await daprClient.EasyInvokeMethodAsync<UserInputDto, bool>(HttpMethod.Post, targetAppId, methodName,  input);
+            return await daprClient.EasyInvokeMethodAsync<UserInputDto, UserOutputDto>(HttpMethod.Post, targetAppId, methodName,  input);
         }
 
         public static async Task<bool> TestUserAsyncAsync(this DaprClient daprClient, string f1, bool f2, long f3, int f4)

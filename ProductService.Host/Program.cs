@@ -2,8 +2,10 @@ using EasyDapr.Core.Exceptions;
 using EasyDapr.Core.Midderwares;
 using FreeSql;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.OpenApi.Models;
-using ProductService.AppService;
+using System.Text.Json;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // 添加 Swagger 服务
@@ -51,11 +53,14 @@ builder.Services.AddSingleton<IFreeSql>(provider =>
 
         .Build());
 
+
+
 // 启用 ApiBehaviorOptions，模拟 [ApiController] 的功能
-//builder.Services.Configure<ApiBehaviorOptions>(options =>
-//{
-//    options.SuppressModelStateInvalidFilter = false; // 自动返回模型验证错误
-//});
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = false; // 自动返回模型验证错误
+    options.SuppressInferBindingSourcesForParameters = false; // 禁用默认推断
+});
 // 添加 MVC 服务并注册自定义控制器发现规则
 builder.Services.AddControllers(options =>
 {
@@ -65,15 +70,15 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<UnifiedResponseFilter>(); // 注册全局过滤器
 });
 
-
-
 // 启用 ApiBehaviorOptions
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = false; // 自动返回模型验证错误
 });
 // 注册 DaprClient 到依赖注入容器
+
 builder.Services.AddDaprClient();
+
 var app = builder.Build();
 
 // 启用 Swagger 中间件
@@ -82,7 +87,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "产品服务 API V1");
         options.RoutePrefix = string.Empty; // 设置 Swagger UI 的根路径（默认是 `/`）
     });
 }

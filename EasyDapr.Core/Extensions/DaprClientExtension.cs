@@ -1,7 +1,6 @@
 ﻿using Dapr.Client;
 using EasyDapr.Core.Exceptions;
 using EasyDapr.Core.ResponseResult;
-using Newtonsoft.Json;
 namespace EasyDapr.Core.Extensions
 {
     public static class DaprClientExtension
@@ -27,7 +26,7 @@ namespace EasyDapr.Core.Extensions
 
                 var dto = Newtonsoft.Json.JsonConvert.DeserializeObject<StandardApiResponse<string>>(errorResponse);
                 // 打印错误信息
-                Console.WriteLine($"Error from target service: {errorResponse}");
+                Console.WriteLine($"Error from target service({daprEx.AppId}): {errorResponse}");
 
                 var msgSplied = dto?.ErrorMessage.GetMessageSplied();
                 // 抛出自定义异常 【{msgSplied?.MessageDetail}=>{daprEx.Message}】
@@ -39,7 +38,7 @@ namespace EasyDapr.Core.Extensions
             }
 
         }
-        
+
         public static MessageSplied GetMessageSplied(this string message)
         {
             var msgSplit = message.Split("【");

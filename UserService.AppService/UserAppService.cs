@@ -23,12 +23,13 @@ namespace UserService.AppService
 
         }
         [HttpPost]
-        [InternalAccessOnly]
-        public async Task<UserOutputDto> GetUserInfoAsync(IdInput input)
+        //[InternalAccessOnly]
+        public async Task<UserOutputDto> GetUserInfoAsync([FromBody] IdInput input)
         {
             var result = await _freeSql.Select<User>().Where(u => u.Id == input.Id).FirstAsync<UserOutputDto>();
             if (result == null)
                 throw new UserFriendlyException("不存在的用户");
+
             try { 
             return result;
             }catch (Exception ex)
@@ -36,6 +37,23 @@ namespace UserService.AppService
                 throw new UserFriendlyException("获取用户信息失败"+ex.Message);
             }
             
+        }
+        [HttpGet("GetUserInfoTest/{id}/x")]
+        public async Task<UserOutputDto> GetUserInfoTestAsync(int id)
+        {
+            var result = await _freeSql.Select<User>().Where(u => u.Id == id).FirstAsync<UserOutputDto>();
+            if (result == null)
+                throw new UserFriendlyException("不存在的用户");
+
+            try
+            {
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new UserFriendlyException("获取用户信息失败" + ex.Message);
+            }
+
         }
 
         public async Task<GetProductOutput> GetUser(IdInput input)
@@ -68,11 +86,11 @@ namespace UserService.AppService
             return new GetProductOutput() { result = "产品资料" };
         }
 
-        public async Task<bool> AddUser(UserInputDto input)
+        public async Task<UserOutputDto> AddUser([FromBody] UserInputDto input)
         {
             // 将用户信息保存到 Dapr 的状态存储
             await _daprClient.SaveStateAsync("statestore", $"user-{input.Name}", input.Name);
-            return true;
+            return new UserOutputDto() { Email =input.Email, Password = input.Password, Name =input.Name,Id=2 };
         }
 
 
@@ -82,5 +100,6 @@ namespace UserService.AppService
             await _daprClient.SaveStateAsync("statestore", $"user-{111}", "awd");
             return true;
         }
+
     }
 }
