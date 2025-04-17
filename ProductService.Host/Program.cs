@@ -69,7 +69,7 @@ builder.Services.AddControllers(options =>
     options.Conventions.Add(new CustomRouteConvention());
     options.Filters.Add<UnifiedResponseFilter>(); // 注册全局过滤器
 });
-
+builder.Services.AddSingleton<IApplicationModelProvider, DynamicBindingApplicationModelProvider>();
 // 启用 ApiBehaviorOptions
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
