@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- edited with XMLSpy v2019 rel. 3 sp1 (x64) (http://www.altova.com) by Bill Wood (Rithum) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="PO_Acknowledgements">
+		<xs:annotation>
+			<xs:documentation>The PO_Acknowledgements element is the root element of the XML document</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="partnerID">
+					<xs:annotation>
+						<xs:documentation>ID assigned by Rithum for the party submitting this batch of messages.  Contact Rithum to find out what value you should be including in this element.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string"/>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PO_Acknowledgement" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>The PO_Acknowledgement element is used to wrap the details of a PO Acknowledgement message.
+
+The message refers to a specific Purchase Offer, and is used by a seller to either indicate agreement with the terms and conditions of a Purchase Offer issued by a buyer or to propose the changes to those terms and conditions that would be needed for the seller to accept the offer and fulfill according to the revised terms.
+
+Lowe’s expects all lines in an order to share the same shipment and/or delivery date. Submitting a PO Acknowledgment with multiple shipment and/or delivery dates will prompt Lowe’s to cancel the order and reissue new orders for the items that share a shipment and/or delivery date. Suppliers will be unable to confirm shipment of orders that were acknowledged with multiple dates. </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="messageControlNumber" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Unique id assigned to this message by the message control system that is responsible for delivery reconciliation.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="originatingSystemTrxId">
+								<xs:annotation>
+									<xs:documentation>Id for this message in the system from which it originates.  The attributes on this element carry information about the message in that system.  Note the 'originating' system and the 'message control' system may not be the same.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:string">
+											<xs:attribute name="trxDate" type="xs:string" use="required">
+												<xs:annotation>
+													<xs:documentation>Posting date of this transaction in the system from which it originates</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="participatingParty" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Partner Id of a party involved in the business relationship.
+
+On documents inbound to Hub the party to whom the message is directed must be identified.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType mixed="true">
+									<xs:simpleContent>
+										<xs:extension base="xs:string">
+											<xs:attribute name="role" use="required">
+												<xs:annotation>
+													<xs:documentation>Role (i.e. ‘merchant’) of the party in the business relationship</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="merchant"/>
+														<xs:enumeration value="vendor"/>
+														<xs:enumeration value="shipper"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+											<xs:attribute name="participationCode" use="required">
+												<xs:annotation>
+													<xs:documentation>E-mail type code (e.g. 'To:', 'From:', 'Cc:')
+
+Indicates party’s participation in this message exchange.
+
+On documents inbound to Hub, the 'To:' party must be identified.  The 'From:' party need not be specified as a participating party – it is assumed to be the partner identified in the partnerID element above.  </xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="Cc:"/>
+														<xs:enumeration value="To:"/>
+														<xs:enumeration value="From:"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="poNumber" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Buyer assigned Id for the Purchase Offer to which this message refers </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="scheduledShipDate" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>When ack-type attribute = 'initial', this can be used to set the date planned for an 'on-time' shipment if the expected fulfillment window (i.e. expected ship date) was not expressed on the purchase order.  If the expected ship date was send on the lines of the PO this element should not be populated. 
+
+Any items that can be included in the 'on-time' shipment should be  acknowledged with an 'accept' action in a lineitem_ack element in this Acknowledgement message.
+
+Any items that cannot be included in the 'on-time' shipment should be  acknowledged with a 'backorder' action in a lineitem_ack element in this Acknowledgement message.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="lineitem_ack" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="poLineNumber" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Buyer assigned number for the Lineitem being acknowledged</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="quantityOpen" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>When the ack-type = "initial" this should be the Quantity Ordered from the Purchase Order Lineitem.
+
+When the ack-type = "status-update" this should be the quantity 'remaining' to be fulfilled for the Lineitem, which may be less than the original Quantity Ordered if some portion has already been shipped or canceled.
+
+The action element(s) contained in this lineitem_ack must provide a fulfillment plan that addresses this quantity.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="action" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>The action element(s) included in a lineitem_ack convey a 'fulfillment plan' for the quantityOpen - i.e. the quantity that has not yet been addressed by either shipment or cancellation.
+
+The fulfillment plan must include an action element for: 1) the quantity (if any) that will be shipped in the next shipment (i.e. accepted for shipment on the date specified in the scheduleShipDate element), 2) the quantity (if any) that will be fulfilled in subsequent shipments (i.e. backordered - expected to ship on date specified in the expectedShipDate attribute of the backorder element), and 3) the quantity (if any) that will not be fulfilled (i.e. canceled).</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="quantity" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>Quantity for which the action applies. It should usually be equal to the quantityOpen except in 'split disposition' situations (e.g. accept/backorder, accept/cancel, backorder/cancel). 
+
+In 'split disposition' situations, multiple action elements are required - one per action/quantity pair. 
+
+In all cases, the sum of this quantity across the action elements in any given lineitem_ack should always equal the quantityOpen.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:choice>
+														<xs:annotation>
+															<xs:documentation>Indicates how a seller will dispose of the specified quantity</xs:documentation>
+														</xs:annotation>
+														<xs:element name="accept" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>The indicated quantity will be included in the next scheduled shipment.</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="backorder">
+															<xs:annotation>
+																<xs:documentation>The indicated quantity will NOT be included in the next scheduled shipment.  Provide either the expected ship date or the backorder reason attribute as part of this action. When backorder is provided either a reason code or expected ship date must exist but not both.</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:simpleContent>
+																	<xs:extension base="xs:string">
+																		<xs:attribute name="expected-ship-date" type="xs:string" use="optional">
+																			<xs:annotation>
+																				<xs:documentation>Date when the goods are expected to be shipped</xs:documentation>
+																			</xs:annotation>
+																		</xs:attribute>
+																		<xs:attribute name="backorder-reason" type="xs:string" use="optional">
+																			<xs:annotation>
+																				<xs:documentation>If firm date when product will be shipped is not known, give reason for the backorder. Contact Rithum for a complete list of codes that apply to this field. Returning an invalid code in this field will result in a failure to process the message.</xs:documentation>
+																			</xs:annotation>
+																		</xs:attribute>
+																	</xs:extension>
+																</xs:simpleContent>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="cancel">
+															<xs:annotation>
+																<xs:documentation>The indicated quantity will not be fulfilled </xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:attribute name="reason" use="required">
+																	<xs:annotation>
+																		<xs:documentation>This attribute contains a Rithum defined code indicating the reason why fulfillment cannot be done. Contact Rithum for a complete list of codes that apply to this field. Returning an invalid code in this field will result in a failure to process the message.</xs:documentation>
+																	</xs:annotation>
+																</xs:attribute>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="seal">
+															<xs:annotation>
+																<xs:documentation>The indicated quantity of goods have been sealed in a package for shipment.  Elective cancellation (e.g. merchant requested) is no longer possible. </xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:simpleContent>
+																	<xs:extension base="xs:string"/>
+																</xs:simpleContent>
+															</xs:complexType>
+														</xs:element>
+													</xs:choice>
+													<xs:element name="estimatedDeliveryDate" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>CCYYMMDD format.  Only submit it different than expectation stipulated on Lineitem of PO.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="ack-type" use="required">
+							<xs:annotation>
+								<xs:documentation>Acknowledgement type code (e.g. 'initial', 'status-update')
+
+An 'initial' PO Ack should report an 'action' (accept/backorder) for each lineitem in the purchase order.
+
+A 'status update' PO Ack must also report an 'action' for each lineitem in the purchase order but the action can reflect a change in status from the initial PO Ack (e.g. from accepted to backordered, or accepted to sealed).</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="initial"/>
+									<xs:enumeration value="status-update"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="messageCount" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The messageCount element will contain a count of PO_Acknowledgement elements included in the PO_Acknowledgements document.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="batch-number" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>The batch ID for this PO_Acknowledgements document.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="miscChargesType">
+		<xs:sequence>
+			<xs:element name="miscChargeAmount">
+				<xs:annotation>
+					<xs:documentation>Miscellaneous charges dollar amount.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="description" type="xs:string" use="optional"/>
+							<xs:attribute name="alwChgIndicator" type="xs:string" use="optional"/>
+							<xs:attribute name="chargeType" type="xs:string" use="optional"/>
+							<xs:attribute name="methodOfHandling" type="xs:string" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="miscChargeBreakout" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Breakout element for miscChargeAmount.  Content of the element represents a sub-component of the miscChargeAmount.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="description" type="xs:string" use="optional"/>
+							<xs:attribute name="alwChgIndicator" type="xs:string" use="optional"/>
+							<xs:attribute name="chargeType" type="xs:string" use="optional"/>
+							<xs:attribute name="methodOfHandling" type="xs:string" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

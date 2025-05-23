@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- edited with XMLSpy v2017 rel. 3 (x64) (http://www.altova.com) by WIlliam Wood (COMMERCE HUB) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="OrderMessageBatch">
+		<xs:annotation>
+			<xs:documentation>The OrderMessageBatch element is the root element for the document.
+
+This schema provides the specifications for interpreting an XML syntax file containing HubXML Purchase Order messages.  </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="partnerID">
+					<xs:annotation>
+						<xs:documentation>The partnerID element will contain the Rithum Id for the party receiving this document.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType mixed="true">
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="name" type="xs:string" use="required">
+									<xs:annotation>
+										<xs:documentation>Name of the business party receiving the message</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="roleType" use="required">
+									<xs:annotation>
+										<xs:documentation>Role type (i.e. ‘vendor’) of partner receiving this document</xs:documentation>
+									</xs:annotation>
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:enumeration value="vendor"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="hubOrder" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>The hubOrder element is used to wrap the details of each Purchase Order message.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="participatingParty" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Partner Id of a party involved in the business relationship.
+
+On documents outbound from Hub the party from whom the message is coming will be identified.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType mixed="true">
+									<xs:simpleContent>
+										<xs:extension base="xs:string">
+											<xs:attribute name="name" type="xs:string" use="required">
+												<xs:annotation>
+													<xs:documentation>Name of the business party</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+											<xs:attribute name="roleType" use="required">
+												<xs:annotation>
+													<xs:documentation>Role (e.g. ‘merchant’, 'shipper') of the business party in the business relationship</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="merchant"/>
+														<xs:enumeration value="vendor"/>
+														<xs:enumeration value="shipper"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+											<xs:attribute name="participationCode" use="required">
+												<xs:annotation>
+													<xs:documentation>E-mail type code (i.e. “From:”, “Cc:”)
+
+Indicates party’s participation in this message exchange.  If present, indicates that this party is participating in the message exchange in some fashion.  
+
+On documents outbound from Hub, the party that authored the message will be coded as the “From:” party.
+
+A Cc: party with role = 'shipper' will be present if a shipping carrier has been pre-selected to provide freight delivery services (LTL).
+
+The “To:” party will not be specified as a participating party – it is assumed to be the partner identified in the partnerID element above.  </xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="To:"/>
+														<xs:enumeration value="From:"/>
+														<xs:enumeration value="Cc:"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="sendersIdForReceiver" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>The sending (“From:”) party’s Id for the receiving party</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="orderId" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>A Rithum assigned ID for this purchase order.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="lineCount" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>The total number of line items included in this purchase order.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="poNumber" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Merchant assigned PO number.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="orderDate" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>The orderDate element will contain the date/time the purchase order was issued by the merchant.  ISO-8601 extended format - see HubXML programming guide for details.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="shipTo">
+								<xs:annotation>
+									<xs:documentation>Link to personPlace element that instructs the vendor where and to whom to ship goods when fulfilling this Order.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="personPlaceID" type="xs:IDREF" use="required">
+										<xs:annotation>
+											<xs:documentation>The value of this attribute must match the value of the personPlaceID attribute on the personPlace element contained in this hubOrder that carries the name / address information.</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="billTo">
+								<xs:annotation>
+									<xs:documentation>With drop-ship fulfillment, link to personPlace element that represents the party that paid the merchant for goods.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="personPlaceID" type="xs:IDREF" use="required">
+										<xs:annotation>
+											<xs:documentation>The value of this attribute must match the value of the personPlaceID attribute on the personPlace element contained in this hubOrder that carries the name / address information.</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="customer" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>With drop-ship fulfillment, link to personPlace element that represents the party to whom the merchant sold goods.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="personPlaceID" type="xs:IDREF" use="required">
+										<xs:annotation>
+											<xs:documentation>The value of this attribute must match the value of the personPlaceID attribute on the personPlace element contained in this hubOrder that carries the name / address information.</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="invoiceTo">
+								<xs:annotation>
+									<xs:documentation>Link to personPlace that instructs the vendor where and to whom to submit invoices related to fulfillment of this Order.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="personPlaceID" type="xs:IDREF" use="required">
+										<xs:annotation>
+											<xs:documentation>The value of this attribute must match the value of the personPlaceID attribute on the personPlace element contained in this hubOrder that carries the name / address information.</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="shippingCode" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>If the ship method (i.e. the shipper and/or level of service that should be used when fulfilling the Order) is assumed to be the same for every line in the purchase order then the code that stipulates the ship method will be presented here.
+
+If the ship method can vary by line, this element will not be present here but will be populated in the lineItem element.
+
+Contact Rithum for a complete list of ship method codes.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="controlNumber" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Numeric rank to be used as a factor in determining the order in which fulfillment work is released to the fulfillment operation on a given day.
+
+The work from Orders with a higher rank should be released ahead of the work from Orders with a lower rank.  The work from Orders where this element is not present ranks lowest.
+
+This ranking should have no effect in setting the release date for the lines of an Order, only in sequencing the release of work that has been queued for a given date.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="salesDivision" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>With drop-ship fulfillment, the salesDivision element contains a code that indicates which merchant sales division booked the sale.  This value will typically determine the branding that must appear on the customer’s packing slip document.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="vendorWarehouseId" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>ID/Reference number for one of a fulfiller's several warehouse/fulfillment centers. If some goods in Offer need to be fulfilled from another location, the exceptions must be reported at the Lineitem level. </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="custOrderNumber" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>With drop-ship fulfillment, Merchant assigned customer order number.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="poHdrData">
+								<xs:annotation>
+									<xs:documentation>The poHdrData element is used to wrap less commonly used header level elements  (i.e. elements that apply to the purchase order as a whole).</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="merchDept" type="xs:string" minOccurs="0"/>
+										<xs:element name="packListData" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>With drop-ship fulfillment, data that may be needed to print on a customer's packing slip</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="packslipMessage" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Note to appear on packing slip</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="packslipTemplate" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Specific, pre-defined value that selects, for this Order, one of several packslip format options that are supported for the Order issuer.
+
+Packing Slip Template:  ‘GS1-128’ : Suppliers must utilize a GS1-128 shipping label per package/pallet. Additional data elements are required in the fulfillment confirmation.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="vendorMessage" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Special instructions to the vendor regarding this purchase order if it involves installation. There is a vendor code:
+If = "1" the install type is Cabinets Only If = "2" the install type is Countertops Only  If = "3" the install type is Cabinets and Countertops.  
+There is also an indicator when Lowe’s is doing the installation:
+When element contains numeric value for “install  type” + "INSTALL SALE" e.g.  (1.INSTALL SALE); this indicates a priority order for Lowe’s install and a third party installer has been scheduled to install the product</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="merchandiseTypeCode" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Merchant specified code for orders indicating merchandising/fulfillment arrangement (e.g. D2S - direct to store)                          D2S:   Dropship to store
+X2S: Dropship to store via cross-dock 
+D2C: Dropship to end customer
+</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="FileIdentifier" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Id for a separate (not part of Order) specifications file - Reference to an image     (ex. http://test.com/img.jpg)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="busRuleCode" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Merchant defined codes for fulfillment conditions
+
+Business Rule Code: ‘LFK’ : Suppliers may ship lines separately using multiple fulfillment confirmations. Lowe’s prefers using a single fulfillment confirmation.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="buyer" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Sales Person's ID / phone number</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="offerCurrency" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Currency in which all purchase related monetary values in order are expressed</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="freightPaymentTermsCode" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Terms related to freight costs      PP - Prepaid: Supplier pays for shipping themselves and invoices Lowes for charges
+CC - Collect: Supplier charges 3rd party account that was given to them during/after onboarding.
+</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="salesAgent" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Name of a specific agent, store, website, or sales group defined by the party issuing the order that is being credited with the sale.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="merchDivision" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>The merchant’s division ID or name. (Selling store for the install job)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="lineItem" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>The lineItem element is used to wrap the details for each product or service for which fulfillment is being requested in the Purchase Order.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="lineItemId" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>A Rithum assigned ID for this line item.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="orderLineNumber" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>These will be sequentially numbered 1 to the number of line items.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="merchantLineNumber" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Merchant assigned line item number from Merchant PO.    Merchant Line numbers are not guaranteed to be sequential or in ascending order.   It is important to capture this line number and return it on any messages related to the Order.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="qtyOrdered" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Quantity being ordered.  Can include decimal point if the unitOfMeasure permits ordering of fractions of a unit.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="unitOfMeasure" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Unit of measure code for qtyOrdered</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="UPC" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>GS1 ID for the specific variant of product being purchased (e.g. UPC, EAN, GTIN)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="description" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Product name or description</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="merchantSKU" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Merchant identifier for the specific variant of product being purchased.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="vendorSKU" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Vendor identifier for the specific variant of product being purchased.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="unitCost" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>This is the per unit cost that the merchant agrees to pay the vendor for each unit fulfilled.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="shippingCode" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>A code  that stipulates the ship method (i.e. the shipper and/or level of service that should be used when fulfilling the line item).
+
+Contact Rithum for a complete list of codes.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="expectedShipDate" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Date BY which the merchant expects vendor to ship goods.  Fulfillment can be done ASAP.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="poLineData">
+											<xs:annotation>
+												<xs:documentation>poLineData element is used to wrap less commonly used detail level elements.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="prodDescription3" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Semi-structured text that describes the configuration parameters for a product – contact Lowe’s for an explanation of any configuration parameters that you do not understand.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="lineReqDelvDate" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>Delivery date requested by customer</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="merchDept" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="personPlace" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Name and address particulars for a person/entity/facility (e.g. customer, ship-to, bill-to, invoice-to, transfer-location) involved with this Order</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="name1" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>The name field for the person/entity/facility.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="name2" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>A secondary name field for the person/entity/facility.  Used when name1 conveys only a first name.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="addressRateClass">
+											<xs:annotation>
+												<xs:documentation>"1" = residential,  "2" = commercial</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="address1">
+											<xs:annotation>
+												<xs:documentation>The first line of the street address field for the person/entity/facility.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="address2" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Optional second line of street address.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="city" type="xs:string"/>
+										<xs:element name="state" type="xs:string"/>
+										<xs:element name="country" type="xs:string"/>
+										<xs:element name="postalCode" type="xs:string"/>
+										<xs:element name="email" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Email address associated with the person/entity/facility.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="dayPhone" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Daytime phone number for the person/entity/facility.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="nightPhone" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Nighttime/off hours phone number for the person/entity/facility.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="partnerPersonPlaceId" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Id for this person/entity/facility assigned by the partner who maintains the data</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="personPlaceID" type="xs:ID" use="required">
+										<xs:annotation>
+											<xs:documentation>Required Id for this element.  Will be referenced by the IDREF attributes in the hubOrder and/or lineItem to establish a link to the to the name/address particulars for various parties associated with the purchase order.  ID attribute values must begin with a letter and may be followed by any number of letters, digits, hyphens, underscores or periods.</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="transactionID" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>The transactionID attribute will contain an ID assigned by Rithum.  This value needs to be returned in the FA in the trxID element , which is a child of messageAck.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="messageCount" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The messageCount element will contain a numeric count of hubOrder elements contained in the document.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="batchNumber" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Will contain a batch ID for this OrderMessageBatch.  This value needs to be returned in the Functional Acknowledgment (FA) in the trxSetID element, which is a child of messageBatchLink</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<!--Breakout elements are used to provide supporting detail for a monetary amount-->
+	<xs:element name="shippingBreakout">
+		<xs:complexType mixed="true">
+			<xs:attribute name="shippingType" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Not currently used</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="currencyUnit" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Not currently used</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="handlingBreakout">
+		<xs:complexType mixed="true">
+			<xs:attribute name="handlingType" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Code indicating the sub-classification of the breakout amount</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="currencyUnit" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Not used - currency is controlled by salesOrderCurrency element in poHdrData</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="creditBreakout">
+		<xs:complexType mixed="true">
+			<xs:attribute name="creditType" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Code indicating the sub-classification of the breakout amount</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="paymentMethod" type="xs:string"/>
+			<xs:attribute name="paymentName" type="xs:string"/>
+			<xs:attribute name="accountNumber" type="xs:string"/>
+			<xs:attribute name="currencyUnit" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Not used - currency is controlled by salesOrderCurrency element in poHdrData</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="taxBreakout">
+		<xs:complexType mixed="true">
+			<xs:attribute name="taxType" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Code indicating the sub-classification of the breakout amount</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="currencyUnit" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Not used - currency is controlled by salesOrderCurrency element in poHdrData</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

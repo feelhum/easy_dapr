@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- edited with XMLSpy v2019 rel. 3 sp1 (x64) (http://www.altova.com) by Jeff Ferguson (Rithum) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="ConfirmMessageBatch">
+		<xs:annotation>
+			<xs:documentation>The ConfirmMessageBatch element is the root element of the XML document</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="partnerID">
+					<xs:annotation>
+						<xs:documentation>ID assigned by Rithum for the party submitting this batch of messages.  Contact Rithum to find out what value you should be including in this element.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType mixed="true">
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="roleType" type="xs:string" use="required">
+									<xs:annotation>
+										<xs:documentation>Role type (i.e. ‘vendor’) of partner sending this document</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="hubConfirm" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>The hubConfirm element is used to wrap the details of each Fulfillment Confirmation message.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="participatingParty" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Partner Id of a party involved in the business relationship.
+
+On documents inbound to Hub the party to whom the message is directed must be identified.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType mixed="true">
+									<xs:simpleContent>
+										<xs:extension base="xs:string">
+											<xs:attribute name="roleType" use="required">
+												<xs:annotation>
+													<xs:documentation>Role (i.e. ‘merchant’) of the party in the business relationship</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="merchant"/>
+														<xs:enumeration value="vendor"/>
+														<xs:enumeration value="shipper"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+											<xs:attribute name="participationCode" use="required">
+												<xs:annotation>
+													<xs:documentation>E-mail type code (e.g. 'To:', 'From:', 'Cc:')
+
+Indicates party’s participation in this message exchange.
+
+On documents inbound to Hub, the 'To:' party must be identified.  The 'From:' party need not be specified as a participating party – it is assumed to be the partner identified in the partnerID element above.  </xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="Cc:"/>
+														<xs:enumeration value="To:"/>
+														<xs:enumeration value="From:"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="partnerTrxID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Message authoring party’s ID for this transaction</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="partnerTrxDate" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Date of this transaction according to message author</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="poNumber" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Merchant assigned PO number</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="hubAction" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>The hubAction element is used to wrap the details of each Fulfillment action against a line item of an Order.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="action" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Required.  One of ‘v_ship’ | ‘v_cancel’ | ‘v_backorder.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="actionCode" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Code providing explanation / reason for action. 
+Not used if action = ‘v_ship’ Required if action = ‘v_cancel’.  
+Optional if action = ‘v_backorder’</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="merchantLineNumber" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Lineitem number assigned by merchant to the PO lineitem being confirmed.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="trxQty" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>The trxQty element will contain the quantity for the specified action.  The quantity is subject to validation to make sure that the cumulative count of fulfillment actions is not in excess of the quantity that is authorized under the Purchase Order.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="packageDetailLink" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>This element has an IDREF type attribute which is used to 'link' to one of the packageDetail elements that come at the end of the message.  
+
+The packageDetailLink element is only required to be provided when there is an action of 'v_ship'.  This structure allows both 'overboxing' and 'multi-package' situations to be reported.  
+
+With 'overboxing', multiple hubAction elements can be linked to a common package.  
+
+With 'multi-package', distinct packageDetailLink elements are used within a single hubAction element to link to the multiple packages.
+
+When multiple packageDetailLink elements are needed to describe a multi-package situation, the content of this element should reflect the package quantity, and the sum of the quantities for the collection of packageDetailLink elements contained in the hubAction must match the trxQty.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType mixed="true">
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="packageDetailID" type="xs:IDREF" use="required">
+															<xs:annotation>
+																<xs:documentation>The value of this IDREF attribute must match the ID value in one of the packageDetail elements at the end of the message.</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="trxItemData">
+											<xs:annotation>
+												<xs:documentation>The trxItemData element is used to wrap less commonly used detail level elements  (e.g. supporting 'breakouts' of monetary amounts, expected date for backorders, ).</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="vendorWarehouseId" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>ID of the vendor’s warehouse from which the product was shipped.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="packageDetail" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>packageDetail elements are used to describe the packages in which items are being shipped.  
+
+This element is required when some part of an order is being confirmed as shipped.  If only cancellations and/or backorders are included within this hubConfirm element a packageDetail element is not required.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="shipDate" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Date package was shipped.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="containerID" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>SSCC ID if GS1-128 label was applied to package.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="lengthDepth" minOccurs="0">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="dimensionUnit" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>inches "IN"</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="width" minOccurs="0">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="dimensionUnit" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>inches "IN"</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="height" minOccurs="0">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="dimensionUnit" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>inches "IN"</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="serviceLevel1" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Carrier and service level specific code.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="trackingNumber" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Shipping carrier’s tracking number for this package.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="shippingWeight" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Weight of the package</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="weightUnit" type="xs:string" use="required">
+															<xs:annotation>
+																<xs:documentation>pounds "LB"</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="shipmentData" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Additional data elements related to LTL service and/or serial numbers for products contained in package.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="billOfLading" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="packageDetailID" type="xs:ID" use="required">
+										<xs:annotation>
+											<xs:documentation>The value of this ID attribute must uniquely identify the packageDetail element within the entire XML document.  This value will be referenced by IDREF attributes on the packageDetailLink elements contained within the message.  The value must begin with a letter and may be followed by any number of letters, digits, hyphens, underscores or periods</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="palletDetailID" type="xs:IDREF" use="optional">
+										<xs:annotation>
+											<xs:documentation>With 'palletized' freight, the value of this IDREF attribute must match the ID value in one of the palletDetail elements at the end of the message.</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="palletDetail" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>This element is required when some part of an order is being confirmed as shipped in packages that were 'palletized' for shipment.
+
+ApalletDetail element is used to describe the pallet weight / dimensions and to report the SSCC Id from the GS1-128 label that was applied to the pallet.
+
+A pallet must be referenced by one or more packageDetail elements using the palletDetailID (IDREF) attribute.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="pkgCount" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Number of packages included in this pallet.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="palletID" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>SSCC ID if GS1-128 labeling was applied to pallet.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="lengthDepth" minOccurs="0">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="dimensionUnit" type="xs:string" use="required">
+															<xs:annotation>
+																<xs:documentation>inches "IN"</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="width" minOccurs="0">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="dimensionUnit" type="xs:string" use="required">
+															<xs:annotation>
+																<xs:documentation>inches "IN"</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="height" minOccurs="0">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="dimensionUnit" type="xs:string" use="required">
+															<xs:annotation>
+																<xs:documentation>inches "IN"</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="instructions" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Free form routing/delivery/receipt instructions</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="serviceLevel1" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Carrier and service level specific code.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="shippingWeight" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Weight of the package</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="weightUnit" type="xs:string" use="required">
+															<xs:annotation>
+																<xs:documentation>pounds "LB"</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="palletDescription" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>freeform text description of pallet</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="palletDetailID" type="xs:ID" use="required">
+										<xs:annotation>
+											<xs:documentation>The value of this ID attribute must uniquely identify a palletDetail element within the entire XML document.  This value will be referenced by an IDREF attribute on the packageDetail element(s) contained within the pallet.  
+
+The value must begin with a letter and may be followed by any number of letters, digits, hyphens, underscores or periods</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="messageCount" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The messageCount element will contain a count of hubConfirm elements (Fulfillment Confirmation messages) included in the ConfirmMessageBatch</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--Breakout elements are used to provide supporting detail for a monetary amount-->
+	<xs:element name="handlingBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="handlingType" type="xs:string"/>
+					<xs:attribute name="currencyUnit" type="xs:string"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="creditBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="creditType" type="xs:string"/>
+					<xs:attribute name="paymentMethod" type="xs:string"/>
+					<xs:attribute name="paymentName" type="xs:string"/>
+					<xs:attribute name="accountNumber" type="xs:string"/>
+					<xs:attribute name="currencyUnit" type="xs:string"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="taxBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="taxType" type="xs:string"/>
+					<xs:attribute name="currencyUnit" type="xs:string"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="discountBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="discTypeCode" type="xs:string"/>
+					<xs:attribute name="discDateCode" type="xs:string"/>
+					<xs:attribute name="discPercent" type="xs:string"/>
+					<xs:attribute name="discDueDate" type="xs:string"/>
+					<xs:attribute name="discDaysDue" type="xs:string"/>
+					<xs:attribute name="netDueDate" type="xs:string"/>
+					<xs:attribute name="netDaysDue" type="xs:string"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="miscChargeBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="description" type="xs:string"/>
+					<xs:attribute name="alwChgIndicator" type="xs:string"/>
+					<xs:attribute name="chargeType" type="xs:string"/>
+					<xs:attribute name="methodOfHandling" type="xs:string"/>
+					<xs:attribute name="currencyUnit" type="xs:string"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

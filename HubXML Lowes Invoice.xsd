@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- edited with XMLSpy v2018 sp1 (x64) (http://www.altova.com) by Chris Lauria (COMMERCE HUB) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="InvoiceMessageBatch">
+		<xs:annotation>
+			<xs:documentation>The InvoiceMessageBatch element is the root element of the XML document</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="partnerID">
+					<xs:annotation>
+						<xs:documentation>ID assigned by Rithum for the party submitting this batch of messages.  Contact Rithum to find out what value you should be including in this element.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType mixed="true">
+						<xs:simpleContent>
+							<xs:extension base="xs:string"/>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="hubInvoice" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>The hubInvoice element is used to wrap the details of each Invoice message.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="participatingParty" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Partner Id of a party involved in the business relationship.
+
+On documents inbound to Hub the party to whom the message is directed must be identified.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType mixed="true">
+									<xs:simpleContent>
+										<xs:extension base="xs:string">
+											<xs:attribute name="roleType" use="required">
+												<xs:annotation>
+													<xs:documentation>Role (i.e. ‘merchant’) of the party in the business relationship</xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="merchant"/>
+														<xs:enumeration value="vendor"/>
+														<xs:enumeration value="shipper"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+											<xs:attribute name="participationCode" use="required">
+												<xs:annotation>
+													<xs:documentation>E-mail type code (e.g. 'To:', 'From:', 'Cc:')
+
+Indicates party’s participation in this message exchange.
+
+On documents inbound to Hub, the 'To:' party must be identified.  The 'From:' party need not be specified as a participating party – it is assumed to be the partner identified in the partnerID element above.  </xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+													<xs:restriction base="xs:string">
+														<xs:enumeration value="Cc:"/>
+														<xs:enumeration value="To:"/>
+														<xs:enumeration value="From:"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="partnerTrxID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Invoice Number - Vendor's ID for this transaction in its A/R application. Invoice Number must be alpha-numeric, and a maximum of 10 characters</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="partnerTrxDate" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Invoice Date - aging start date in vendor's A/R application</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="poNumber" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Merchant assigned PO number.  Invoice is requesting payment for fulfillment activity related to this PO.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="trxCurrency" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Currency in which all monetary values related to the invoice are expressed.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="trxMiscCharges" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Net of all miscellaneous charges and/or allowances (exclusive of amounts reported at line level).  
+
+This amount should be included in trxBalanceDue.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="trxTax" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Tax charges (exclusive of tax charges reported at line level)
+
+This amount should be included in trxBalanceDue.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="trxBalanceDue" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Amount being invoiced</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="trxDiscount" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Content of this element represents an amount of discount available based on payment terms. If you have a discount you must include both Amount and Percent > 0 and you MUST express the Terms Discount in the same format as Terms Net (days or date).</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="trxData">
+								<xs:annotation>
+									<xs:documentation>The trxData element is used to wrap less commonly used header level elements  (e.g. supporting 'breakouts' of monetary amounts, references to transactions in other applications, FLSA compliance indicator).</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="taxBreakout" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Breakout element for tax.  Content of the element represents a sub-component of the trxTax element.   This element also carries attributes that can be used to characterize the tax sub-component.
+
+The collection of breakout elements should sum to match the amount in the trxTax element that is a direct child of hubInvoice.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="discountBreakout" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Use to provide payment terms and details regarding payment related discount opportunities.  The attributes of this element stipulate the discount calculation and qualifying factors that are in effect.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="miscChargeBreakout" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Breakout element for miscellaneous charges.   Content of the element represents a sub-component of the amount in the trxMiscCharges element.  This element also carries attributes that can be used to describe the miscellaneous charge sub-component.
+
+The collection of breakout elements should sum to match the amount in the trxMiscCharges element that is a direct child of hubInvoice.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="hubAction" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>The hubAction element is used to wrap the details of each Invoice item against a line item of an Order.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="action" default="v_invoice">
+											<xs:annotation>
+												<xs:documentation>Required - 'v_invoice'</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="v_invoice"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="merchantLineNumber" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Lineitem number assigned by merchant to the PO lineitem being confirmed.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="trxQty" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>The quantity being invoiced. This quantity is subject to validation to make sure that the cumulative count of items invoiced is not in excess of the quantity that was fulfilled.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="trxUnitCost" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>An explicit decimal point and no more than four decimal places should be reported.  No $ should be included in this element</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="CARBformaldehydeComplianceCode" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Numeric code indicating compliance level for a product according to standards set by CARB:
+0-Non-Compliant
+1-Phase 1 Compliant
+2-Phase 2 Compliant
+3-No Added Formaldehyde
+4-Ultra Low Emission Formaldehyde Use (ULEF)
+5- TSCA Title VI Compliant OR a combination of TSCA Title VI Compliant and Phase 2 Compliant</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="invoiceDetailLink">
+											<xs:annotation>
+												<xs:documentation>Link to an Invoice-to and/or Remit-to name/address block if required by merchant as part of an Invoice. </xs:documentation>
+											</xs:annotation>
+											<xs:complexType mixed="true">
+												<xs:attribute name="invoiceDetailID" type="xs:IDREF" use="required">
+													<xs:annotation>
+														<xs:documentation>The value of this IDREF attribute must match the ID value in the invoiceDetail element at the end of the message.</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="invoiceDetail" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Additional information required by some merchants when invoicing.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="remitTo">
+											<xs:annotation>
+												<xs:documentation>The entity to be paid.  Often used to convey an account number for the entity in the merchant's A/P system.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:attribute name="personPlaceID" type="xs:IDREF" use="required">
+													<xs:annotation>
+														<xs:documentation>Link to personPlace that represents the remit-to party.  The value of this IDREF attribute must match the ID value in one of the personPlace elements at the end of the message.</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="invoiceDetailID" type="xs:ID" use="required">
+										<xs:annotation>
+											<xs:documentation>ID for an invoiceDetail element.  The value of this ID attribute must uniquely identify the invoiceDetail element within the entire XML document.  Will be referenced by the invoiceDetailLink element to associate this element with message line(s).  Must begin with a letter and may be followed by any number of letters, digits, hyphens, underscores or periods.</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="personPlace" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Name / address block for invoice-to, remit-to or ship-to information.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="partnerPersonPlaceId" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Suppliers must provide the Lowe's assigned remit-to ID as part of their invoice message.  Invoices submitted without this value will be rejected by Lowe's.  If you do not know the remit-to ID that has been assigned to your organization by Lowe's, contact the Lowes Accounts Payable dept</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="personPlaceID" type="xs:ID" use="required">
+										<xs:annotation>
+											<xs:documentation>ID for a personPlace element.  The value of this ID attribute must uniquely identify the personPlace element within the entire XML document. Will be referenced by the invoice-to, remit-to and shipTo elements to establish a link to the person/place particulars for these entities. ID tokens must begin with a letter and may be followed by any number of letters, digits, hyphens, underscores or periods.</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="messageCount" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The messageCount element will contain a count of hubInvoice elements (Invoice messages) included in the InvoiceMessageBatch</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!--Breakout elements are used to provide supporting detail for a monetary amount-->
+	<xs:element name="handlingBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="handlingType" type="xs:string" use="required"/>
+					<xs:attribute name="currencyUnit" type="xs:string"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="creditBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="creditType" type="xs:string" use="required"/>
+					<xs:attribute name="paymentMethod" type="xs:string"/>
+					<xs:attribute name="paymentName" type="xs:string"/>
+					<xs:attribute name="accountNumber" type="xs:string"/>
+					<xs:attribute name="currencyUnit" type="xs:string"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="taxBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="taxType" type="xs:string" use="required">
+						<xs:annotation>
+							<xs:documentation>This attribute contains a text description of the type of tax breakout.taxBreakout	taxType One tax breakout per type of tax. The“taxType=” values are: "MA" for California Carpet Stewardship Assessment Tax, "MS" for Hawaii Excise Tax, “CG” for GST, "SP" for PST, “ST” for QST, and “VA” for HST
+			</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="discountBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="discPercent" type="xs:string" use="optional">
+						<xs:annotation>
+							<xs:documentation>If you have a discount you must include both Amount and Percent > 0 and you MUST express the Terms Discount in the same format as Terms Net (days or date).</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="discDueDate" type="xs:string" use="optional">
+						<xs:annotation>
+							<xs:documentation>If you have a discount you must include discount days or date but NOT both. If sending Terms Discount Due Date then you must send Terms Net Due Date NOT Terms Net Days.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="discDaysDue" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>If you have a discount you must include discount days or date but NOT both. If sending Terms Discount Days Due then you must send Terms Net Days Not The Terms Net Due Date.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="netDueDate" type="xs:string" use="optional">
+						<xs:annotation>
+							<xs:documentation>You must have net terms days or date but NOT both.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="netDaysDue" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>You must have net terms days or date but NOT both.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="miscChargeBreakout">
+		<xs:complexType mixed="true">
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="chargeType" type="xs:string" use="optional">
+						<xs:annotation>
+							<xs:documentation>Code representing charge or allowance
+
+“C680” Environmental/Eco charge </xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

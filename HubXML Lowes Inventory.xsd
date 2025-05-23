@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- edited with XMLSpy v2017 rel. 3 (x64) (http://www.altova.com) by WIlliam Wood (COMMERCE HUB) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="advice_file">
+		<xs:annotation>
+			<xs:documentation>XML document used to submit updates to the inventory status of products in merchant assortment(s).
+
+Each time an update file is submitted, a supplier is certifying the stock levels for all SKU’s as of the time of file submission, not only those that are included in the file.  If the available count for a SKU has not changed since the last update, that SKU is not required to be included in the update file.  SKUs that are not included in the file are considered to be recertified at their previously reported level</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="advice_file_control_number" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Unique ID for this submission document</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="vendor" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Hub ID for the Vendor.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="vendorMerchID" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Vendor’s ID for the Merchant whose product assortment is represented by the product elements. 'lowes'
+
+When this element is present here (as a direct child of the advice_file element) then every product reported in the file will be considered to be part of the assortment for the specified merchant.  In this case, there should be NO restriction elements present in the file.
+
+When this element is not present here then it MUST be present as a child of the restriction element of every product to explicitly identify the merchant whose assortment is being updated with inventory information.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="product" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>SKU specific selling and inventory status for a product in a merchant assortment.  It is assumed that the value of any element or attribute that is not populated has not changed. </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="vendor_SKU" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Vendor’s SKU for the specific variant of a product for which this inventory data pertains.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="qtyonhand" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Aggregate count across all warehouses.  Use warehouseBreakout element to report warehouse specific counts.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="unitOfMeasure" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>relates to qtyonhand, next_available_qty</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="available" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>A selling status indicator for the product.  Submit one of the following values:
+
+"YES" indicates that the qtyonhand is available to be sold and that stock levels for this product are actively managed and replenished.
+
+"NO" indicates that orders are not currently being accepted for the product, even if the qtyonhand is greater than zero.  This should be a temporary 'stop-sell' situation.  If the product is not expected to be offered for sale in the future it should be changed to a "DELETED" status.
+
+"GUARANTEED" indicates that that availability for the product is guaranteed regardless of the qtyonhand (i.e. stock level / replenishment is not a concern).  
+
+"DISCONTINUED" indicates that there will be no further replenishment of the supply of this product. The SKU can continue to be sold as long as the qtyonhand is greater than zero, but there should be no expectation that a backorder situation could be satisfied for the product.
+
+"DELETED" - SKU is no longer part of the merchant assortment.  Orders for this product are no longer being accepted.
+</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="UPC" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>GS1 ID (e.g. UPC, EAN, GTIN) for the specific variant of a product for which this inventory data pertains.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="description" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Description of the specific variant of a product for which this inventory data pertains.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="next_available_date" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>CCYYMMDD format.  Date next shipment expected to be received into inventory.   
+When using warehouseBreakout element to report warehouse specific next_available_qty, this date should reflect the earliest of the next_available_dates reported in the warehouse elements. </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="next_available_qty" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Aggregate quantity on-order  across all warehouses.  Use warehouseBreakout element to report warehouse specific counts.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="discontinued_date" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>CCYYMMDD format.  Date when replenishment of product has been / will be discontinued. </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="unit_cost" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Cost of a single unit, This should reflect the wholesale cost to retailer. Can be sent as confirmation of a negotiated purchasing price.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="restriction" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Must be used if updating inventory for multiple merchant assortments in this document (i.e. if vendorMerchID is not present as a direct child of the advice_file element).  </xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="vendorMerchID">
+											<xs:annotation>
+												<xs:documentation>Vendor’s ID for the Merchant whose assortment is to be updated with the product inventory position being reported.
+
+When this element is not present as a direct child of the advice_file element, then it MUST be present here (as a child of the restriction element) for every product to identify the merchant whose assortment is being updated.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="merchantSKU" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Merchant's SKU for product</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="warehouseBreakout">
+								<xs:annotation>
+									<xs:documentation>Use to provide warehouse specific breakout of the aggregate counts in qtyonhand and next_available_qty</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="warehouse" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="qtyonhand" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>Quantity at this warehouse</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="next_available" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Details about next shipement scheduled for this warehouse.</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:attribute name="quantity" type="xs:string" use="optional">
+																<xs:annotation>
+																	<xs:documentation>Quantity expected to be received with next shipment. </xs:documentation>
+																</xs:annotation>
+															</xs:attribute>
+															<xs:attribute name="date" type="xs:string">
+																<xs:annotation>
+																	<xs:documentation>CCYYMMDD format.  Date next shipment expected to be received into inventory.</xs:documentation>
+																</xs:annotation>
+															</xs:attribute>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute name="warehouse-id" type="xs:string" use="required">
+													<xs:annotation>
+														<xs:documentation>Warehouse with this ID must be registered with Rithum and approved by the merchant before inventory can be reported.</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="advice_file_count" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Count of product elements.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="as-of-date" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Date/time when qtyonhand counts contained in this document were certified.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="advice-content">
+				<xs:annotation>
+					<xs:documentation>Indicates whether this document includes a product element for every SKU in the merchant assortment(s) ('full') or if it includes elements only for products whose inventory status has changed since the last update was submitted ('incr').
+
+If submitting an 'incr' type advice, any product not included in the document is deemed to have had its current qtyonhand re-certified as accurate for the new as-of date/time.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="incr"/>
+						<xs:enumeration value="full"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="vendorMerchID" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Vendor’s ID for the Merchant whose product assortment is represented by the product elements.
+
+If this element is present as a direct child of the advice_file element, then every product reported in the file will be considered to be part of the assortment for the specified merchant.  In this case, there should be NO restriction elements present in the file.
+
+If this element is not present as a direct child of the advice_file element, then it MUST be present as a child of the restriction element of every product to explicitly identify the merchant whose assortment is being updated with inventory information.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

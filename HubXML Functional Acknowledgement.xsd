@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- edited with XMLSpy v2014 sp1 (x64) (http://www.altova.com) by Jim Janczykowski (COMMERCE TECHNOLOGIES) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="FAMessageBatch">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="partnerID" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>ID assigned by Rithum for the party submitting this batch of FAs.  Contact Rithum to find out what value you should be including in this element.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="hubFA" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>The hubFA element is used to wrap the details of a Functional Acknowledgment message.  
+
+A single Functional Acknowledgment message should be submitted for each Batch (i.e. file) received, regardless of how many business messages were included in the Batch.
+
+The details of a Functional Acknowledgment message provide the business message level acceptance or rejection status for the messages that were received in the Batch.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="messageBatchLink">
+								<xs:annotation>
+									<xs:documentation>Data needed to identify the Batch of messages that this FA pertains to.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="trxSetID" type="xs:string" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>ID of Batch that was delivered as a non-EDI syntax flat file.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="messageAck" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Detail level disposition for each business message that was contained in the Batch that this FA pertains to.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="trxID" type="xs:string"/>
+										<xs:element name="detailException" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="detailID" type="xs:string">
+														<xs:annotation>
+															<xs:documentation>ID of entry in an exception log</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="exceptionDesc" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Free form text explanation of syntactical exceptions or violations</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="messageDisposition">
+											<xs:annotation>
+												<xs:documentation>Disposition status for the syntactical validity of a business message that was contained in the Batch that this FA pertains to.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:attribute name="status">
+													<xs:annotation>
+														<xs:documentation>code indicating result of syntactical validity checks</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:enumeration value="R"/>
+															<xs:enumeration value="A"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="type" use="required">
+										<xs:annotation>
+											<xs:documentation>Differentiates between FA for an Order vs. a Message related to an Order.</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="msg"/>
+												<xs:enumeration value="order"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="messageBatchDisposition">
+								<xs:annotation>
+									<xs:documentation>Summary disposition for the Batch that this FA pertains to.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="trxReceivedCount" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Should equal the count of messageAck elements</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="trxAcceptedCount" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Should equal the count of detail level statuses where the status code = "A"</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="exceptionDesc" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Free form text explanation of general exceptions or violations</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="status">
+										<xs:annotation>
+											<xs:documentation>code indicating summarized result of syntactical validity checks.  "P" indicates a mix of "A" and "R" statuses at the detail level.</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="P"/>
+												<xs:enumeration value="R"/>
+												<xs:enumeration value="A"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="messageCount" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The messageCount element will contain a count of hubFA elements included in the FAMessageBatch</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="type" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Not used</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="batchNumber" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>ID for this batch of FA messages.  Unrelated to any previously received batch numbers.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
